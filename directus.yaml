@@ -1,0 +1,121 @@
+namespace: directus
+
+database:
+  defines: runnable
+  containers:
+    defines: containers
+    postgres:
+      image: postgres:12
+      environment:
+        - <- `POSTGRES_USER=${postgres-user}`
+        - <- `POSTGRES_PASSWORD=${postgres-password}`
+        - <- `POSTGRES_DB=${postgres-db}`
+      paths:
+        - <- `${db-path}:/var/lib/postgresql/data`
+  variables:
+    defines: variables
+    db-path:
+      type: string
+      value: <- `${monk-volume-path}/directus-database`
+  checks:
+    defines: checks
+    readyness:
+      code: true
+      period: 15
+      initialDelay: 10
+
+cache:
+  defines: runnable
+  containers:
+    defines: containers
+    redis:
+      image: docker.io/redis:alpine
+      paths:
+        - <- `${moncc-volume-path}/redis:/data`
+  checks:
+    defines: checks
+    readyness:
+      code: true
+      period: 15
+      initialDelay: 10
+
+directus:
+  defines: runnable
+  containers:
+    defines: containers
+    directus:
+      image: directus/directus:v9.0.0-rc.24
+      environment:
+        - <- `KEY=${key}`
+        - <- `SECRET=${secret}`
+        - <- `DB_CLIENT=pg`
+        - <- `DB_HOST=${db-host}`
+        - <- `DB_PORT=${db-port}`
+        - <- `DB_DATABASE=${postgres-db}`
+        - <- `DB_USER=${postgres-user}`
+        - <- `DB_PASSWORD=${postgres-password}`
+        - <- `CACHE_ENABLED=${cache-enabled}`
+        - <- `CACHE_STORE=${cache-store}`
+        - <- `CACHE_REDIS=${cache-redis}`
+        - <- `ADMIN_EMAIL=${admin-email}`
+        - <- `ADMIN_PASSWORD=${admin-password}`
+      paths:
+        - <- `${uploads-path}:/directus/uploads`
+      ports:
+        - 8055:8055
+  depends:
+    defines: depends
+    wait-for:
+      runnables:
+        - directus/cache
+        - directus/database
+      timeout: 60
+  variables:
+    defines: variables
+    uploads-path: <- `${monk-volume-path}/directus-uploads`
+    cache-host: <- get-hostname("directus/cache", "redis")
+    db-host:
+      type: string
+      value: <- get-hostname("directus/database", "postgres")
+    db-port:
+      type: int
+      value: 5432
+    cache-enabled:
+      type: bool
+      value: "true"
+    cache-store:
+      type: string
+      value: "redis"
+    cache-redis:
+      type: string
+      value: <- `redis://${cache-host}:6379`
+
+stack:
+  defines: process-group
+  runnable-list:
+    - directus/database
+    - directus/cache
+    - directus/directus
+  variables:
+    defines: variables
+    postgres-user:
+      type: string
+      value: "directus"
+    postgres-password:
+      type: string
+      value: "directus"
+    postgres-db:
+      type: string
+      value: "directus"
+    admin-email:
+      type: string
+      value: "admin@admin.admin"
+    admin-password:
+      type: string
+      value: "d1r3ctu5"
+    key:
+      type: string
+      value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
+    secret:
+      type: string
+      value: "6116487b-cda1-52c2-b5b5-c8022c45e263"
