@@ -113,7 +113,7 @@ stack:
       value: "directus"
     admin-email:
       type: string
-      value: "admin@admin.admin"
+      value: "admin@directus.io"
     admin-password:
       type: string
       value: "d1r3ctu5"
