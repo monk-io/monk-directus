@@ -12,6 +12,8 @@ database:
         - <- `POSTGRES_DB=${postgres-db}`
       paths:
         - <- `${db-path}:/var/lib/postgresql/data`
+      ports:
+        - 5432
   variables:
     defines: variables
     db-path:
@@ -31,7 +33,9 @@ cache:
     redis:
       image: docker.io/redis:alpine
       paths:
-        - <- `${moncc-volume-path}/redis:/data`
+        - <- `${monk-volume-path}/redis:/data`
+      ports:
+        - 6379
   checks:
     defines: checks
     readyness:
