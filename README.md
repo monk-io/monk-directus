@@ -6,7 +6,7 @@ This template includes Redis cache and Postgres database configured to work with
 
 ## Start
 
-Setup Monk - https://docs.monk.io/monk-in-10/
+Set up Monk - https://docs.monk.io/docs/monk-in-10/
 
 Start `monkd` and login.
 
