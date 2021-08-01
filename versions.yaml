@@ -1,0 +1,14 @@
+namespace: directus
+
+latest:
+  defines: runnable
+  inherits: ./v9.0.0-rc.87 # always update this line to the newest version
+
+# for each new release, append a similar section to this file
+v9.0.0-rc.87:
+  defines: runnable
+  inherits: ./directus-base
+  version: 9.0.0-rc.87
+  containers:
+    directus:
+      image-tag: 9.0.0-rc.87

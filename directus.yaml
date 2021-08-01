@@ -43,12 +43,11 @@ cache:
       period: 15
       initialDelay: 10
 
-directus:
-  defines: runnable
+directus-base:
   containers:
     defines: containers
     directus:
-      image: directus/directus:v9.0.0-rc.24
+      image: directus/directus
       environment:
         - <- `KEY=${key}`
         - <- `SECRET=${secret}`
@@ -63,6 +62,7 @@ directus:
         - <- `CACHE_REDIS=${cache-redis}`
         - <- `ADMIN_EMAIL=${admin-email}`
         - <- `ADMIN_PASSWORD=${admin-password}`
+        - CONFIG_PATH=/directus/monk-config.json
       paths:
         - <- `${uploads-path}:/directus/uploads`
       ports:
@@ -74,10 +74,22 @@ directus:
         - directus/cache
         - directus/database
       timeout: 60
+  files:
+    defines: files
+    config:
+      container: directus
+      path: /directus/monk-config.json
+      raw: true
+      mode: 0666
+      contents: <- $config
   variables:
     defines: variables
-    uploads-path: <- `${monk-volume-path}/directus-uploads`
-    cache-host: <- get-hostname("directus/cache", "redis")
+    uploads-path:
+      type: string
+      value: <- `${monk-volume-path}/directus-uploads`
+    cache-host:
+      type: string
+      value: <- get-hostname("directus/cache", "redis")
     db-host:
       type: string
       value: <- get-hostname("directus/database", "postgres")
@@ -93,33 +105,3 @@ directus:
     cache-redis:
       type: string
       value: <- `redis://${cache-host}:6379`
-
-stack:
-  defines: process-group
-  runnable-list:
-    - directus/database
-    - directus/cache
-    - directus/directus
-  variables:
-    defines: variables
-    postgres-user:
-      type: string
-      value: "directus"
-    postgres-password:
-      type: string
-      value: "directus"
-    postgres-db:
-      type: string
-      value: "directus"
-    admin-email:
-      type: string
-      value: "admin@directus.io"
-    admin-password:
-      type: string
-      value: "d1r3ctu5"
-    key:
-      type: string
-      value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
-    secret:
-      type: string
-      value: "6116487b-cda1-52c2-b5b5-c8022c45e263"

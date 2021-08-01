@@ -1,0 +1,34 @@
+namespace: directus
+
+stack:
+  defines: process-group
+  runnable-list:
+    - directus/database
+    - directus/cache
+    - directus/latest
+  variables:
+    defines: variables
+    postgres-user:
+      type: string
+      value: "directus"
+    postgres-password:
+      type: string
+      value: "directus"
+    postgres-db:
+      type: string
+      value: "directus"
+    admin-email:
+      type: string
+      value: "admin@directus.io"
+    admin-password:
+      type: string
+      value: "d1r3ctu5"
+    key:
+      type: string
+      value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
+    secret:
+      type: string
+      value: "6116487b-cda1-52c2-b5b5-c8022c45e263"
+    config:
+      type: string
+      value: "{}"
