@@ -7,7 +7,6 @@ stack:
     - directus/cache
     - directus/latest
   variables:
-    defines: variables
     postgres-user:
       type: string
       value: "directus"

@@ -3,7 +3,6 @@ namespace: directus
 database:
   defines: runnable
   containers:
-    defines: containers
     postgres:
       image: postgres:12
       environment:
@@ -15,21 +14,41 @@ database:
       ports:
         - 5432
   variables:
-    defines: variables
     db-path:
       type: string
       value: <- `${monk-volume-path}/directus-database`
+    postgres-user:
+      type: string
+      value: "directus"
+    postgres-password:
+      type: string
+      value: "directus"
+    postgres-db:
+      type: string
+      value: "directus"
+    admin-email:
+      type: string
+      value: "admin@directus.io"
+    admin-password:
+      type: string
+      value: "d1r3ctu5"
+    key:
+      type: string
+      value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
+    secret:
+      type: string
+      value: "6116487b-cda1-52c2-b5b5-c8022c45e263"
+    config:
+      type: string
+      value: "{}"
   checks:
-    defines: checks
     readyness:
       code: true
       period: 15
       initialDelay: 10
 
 cache:
-  defines: runnable
   containers:
-    defines: containers
     redis:
       image: docker.io/redis:alpine
       paths:
@@ -37,7 +56,6 @@ cache:
       ports:
         - 6379
   checks:
-    defines: checks
     readyness:
       code: true
       period: 15
@@ -45,7 +63,6 @@ cache:
 
 directus-base:
   containers:
-    defines: containers
     directus:
       image: directus/directus
       environment:
@@ -67,15 +84,7 @@ directus-base:
         - <- `${uploads-path}:/directus/uploads`
       ports:
         - 8055:8055
-  depends:
-    defines: depends
-    wait-for:
-      runnables:
-        - directus/cache
-        - directus/database
-      timeout: 60
   files:
-    defines: files
     config:
       container: directus
       path: /directus/monk-config.json
@@ -83,7 +92,6 @@ directus-base:
       mode: 0666
       contents: <- $config
   variables:
-    defines: variables
     uploads-path:
       type: string
       value: <- `${monk-volume-path}/directus-uploads`
@@ -105,3 +113,27 @@ directus-base:
     cache-redis:
       type: string
       value: <- `redis://${cache-host}:6379`
+    postgres-user:
+      type: string
+      value: "directus"
+    postgres-password:
+      type: string
+      value: "directus"
+    postgres-db:
+      type: string
+      value: "directus"
+    admin-email:
+      type: string
+      value: "admin@directus.io"
+    admin-password:
+      type: string
+      value: "directus"
+    key:
+      type: string
+      value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
+    secret:
+      type: string
+      value: "6116487b-cda1-52c2-b5b5-c8022c45e263"
+    config:
+      type: string
+      value: "{}"
