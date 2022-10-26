@@ -2,6 +2,14 @@ namespace: directus
 
 database:
   defines: runnable
+  metadata:
+    name: PostgreSQL
+    description: PostgreSQL is a powerful, open source object-relational database system with over 30 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance.
+    tags: dataops,database
+    website: https://www.postgresql.org/
+    source: https://github.com/postgres/postgres
+    publisher: "monk.io"
+    icon: https://assets.monk.io/icons/postgresql_logo.png
   containers:
     postgres:
       image: postgres:12
@@ -48,6 +56,14 @@ database:
       initialDelay: 10
 
 cache:
+  metadata:
+    name: Redis
+    description: Redis is an in-memory database that persists on disk.
+    website: https://redis.io
+    source: https://github.com/redis/redis
+    publisher: "monk.io"
+    icon: https://assets.monk.io/icons/png-transparent-redis-in-memory-database-key-value-database-cache-speech-miscellaneous-logo-data.png
+    email: maciej@monk.io
   containers:
     redis:
       image: docker.io/redis:alpine
@@ -62,6 +78,12 @@ cache:
       initialDelay: 10
 
 directus-base:
+  metadata:
+    name: Directus
+    icon: https://pbs.twimg.com/profile_images/1495544699410653190/Vb675Xa3_400x400.jpg
+    description: Directus is the world's first Open Data Platform for instantly turning any SQL database into an API and beautiful no-code app.
+    website: https://directus.io/
+    github: https://github.com/directus/directus
   containers:
     directus:
       image: directus/directus
