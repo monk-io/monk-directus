@@ -1,33 +1,19 @@
+---
 namespace: directus
 
 stack:
   defines: process-group
+
+  metadata:
+    name: Directus
+    icon: https://pbs.twimg.com/profile_images/1495544699410653190/Vb675Xa3_400x400.jpg
+    description: |
+      Directus is the world's first Open Data Platform for instantly turning any SQL database into an API and beautiful no-code app.
+      Default username/password: admin@directus.io / directus
+    website: https://directus.io/
+    github: https://github.com/directus/directus
+
   runnable-list:
     - directus/database
     - directus/cache
-    - directus/latest
-  variables:
-    postgres-user:
-      type: string
-      value: "directus"
-    postgres-password:
-      type: string
-      value: "directus"
-    postgres-db:
-      type: string
-      value: "directus"
-    admin-email:
-      type: string
-      value: "admin@directus.io"
-    admin-password:
-      type: string
-      value: "d1r3ctu5"
-    key:
-      type: string
-      value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
-    secret:
-      type: string
-      value: "6116487b-cda1-52c2-b5b5-c8022c45e263"
-    config:
-      type: string
-      value: "{}"
+    - directus/server

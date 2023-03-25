@@ -1,2 +1,2 @@
 REPO monk-directus
-LOAD directus.yaml versions.yaml stack.yaml
+LOAD directus.yaml stack.yaml

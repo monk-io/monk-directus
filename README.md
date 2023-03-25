@@ -19,12 +19,11 @@ monk login --email=<email> --password=<password>
 This template is available directly from Monkhub.io therefore if you want a quick deploy simply run below command after launching `monkd`:
 
 ```bash
-➜  monk list directus
 ✔ Got the list
 Type      Template           Repository  Version  Tags
 runnable  directus/cache     local       -        -
-runnable  directus/database  local       -        -
-runnable  directus/directus  local       -        -
+runnable  directus/database  local       -        dataops, database
+runnable  directus/server    local       -        -
 group     directus/stack     local       -        -
 
 ➜  monk run directus/stack
@@ -73,32 +72,18 @@ Once cluster is ready execute the same command as for local and select your clus
 
 You can add/remove or override current configuration of the template or create a brand new one which could inherit the components that you require.
 
-The current variables can be found in `directus/stack/variables` section
+The current variables can be added in `directus/stack/variables` section
 
 ```yaml
-variables:
-    defines: variables
-    postgres-user:
-        type: string
-        value: "directus"
-    postgres-password:
-        type: string
-        value: "directus"
-    postgres-db:
-        type: string
-        value: "directus"
     admin-email:
-        type: string
-        value: "admin@admin.admin"
+      type: string
+      value: admin@directus.io
     admin-password:
-        type: string
-        value: "d1r3ctu5"
-    key:
-        type: string
-        value: "255d861b-5ea1-5996-9aa3-922530ec40b1"
-    secret:
-        type: string
-        value: "6116487b-cda1-52c2-b5b5-c8022c45e263"
+      type: string
+      value: directus
+    config:
+      type: string
+      value: '{}'
 ```
 
 **It is STRONGLY advised to change these values when running Directus in production!**
@@ -112,12 +97,8 @@ directus-prod:
     defines: process-group
     inherits: directus/stack
     variables:
-        postgres-db-user: secret-user
-        postgres-db-password: my-directus-postgres-pass
         admin-email: admin@yoursite.io
         admin-password: hacker-typer
-        key: 355d861b-6ea1-5996-9aa3-922530ec40b2
-        secret: 1546487b-asd1-52c2-b5b5-c8022c45e462
 ```
 
 Apart from the variables exposed by Monk, you can tune all Directus settings by providing a JSON config in `config` variable like so:
@@ -160,8 +141,8 @@ This will always pull the latest available version and replace the running one s
 
 ```bash
 # show Directus logs
-➜  monk logs -l 1000 -f directus/latest
+➜  monk logs -l 1000 -f directus/server
 
 # access shell in the container running Directus
-➜  monk shell directus/latest
+➜  monk shell directus/server
 ```
