@@ -3,16 +3,19 @@ namespace: directus
 
 stack:
   defines: process-group
-
   metadata:
     name: Directus
+    shortname: Directus
     icon: https://pbs.twimg.com/profile_images/1495544699410653190/Vb675Xa3_400x400.jpg
     description: |
-      Directus is the world's first Open Data Platform for instantly turning any SQL database into an API and beautiful no-code app.
-      Default username/password: admin@directus.io / directus
+      Directus is an open-source content management system (CMS) and application programming interface (API) that allows you to create custom databases and user interfaces without writing any code.
+      With Directus, you can build custom backends and interfaces for websites, mobile applications, and other digital platforms. It is designed to be flexible, scalable, and easy to use, with a modular architecture that allows you to customize and extend its functionality to meet your specific needs.
+      Directus is also highly secure and provides granular user permissions, making it ideal for enterprise-level applications.
+      Overall, Directus is a powerful and versatile tool for managing content and data in a modern digital environment.
     website: https://directus.io/
-    github: https://github.com/directus/directus
-
+    source: https://github.com/directus/directus
+    tags: Content management system (CMS), Application programming interface (API), Database management, Custom backends, User interfaces, Open source, Modular architecture, Customizable, Scalable, Security, Granular user permissions, Enterprise-level applications
+    publisher: monk.io
   runnable-list:
     - directus/database
     - directus/cache
