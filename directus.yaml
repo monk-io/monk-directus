@@ -7,7 +7,7 @@ database:
     private: true
     name: PostgreSQL
     description: PostgreSQL is a powerful, open source object-relational database system with over 30 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance.
-    tags: dataops,database
+    tags: database, dataops
     website: https://www.postgresql.org/
     source: https://github.com/postgres/postgres
     publisher: monk.io
@@ -72,7 +72,7 @@ server:
       Overall, Directus is a powerful and versatile tool for managing content and data in a modern digital environment.
     website: https://directus.io/
     source: https://github.com/directus/directus
-    tags: Content management system (CMS), Application programming interface (API), Database management, Custom backends, User interfaces, Open source, Modular architecture, Customizable, Scalable, Security, Granular user permissions, Enterprise-level applications
+    tags: enterprise-level applications, customizable, database management, user interfaces, modular architecture, scalable, application programming interface, security, custom backends, granular user permissions, open source
     publisher: monk.io
   depends:
     wait-for:
