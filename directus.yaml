@@ -154,7 +154,7 @@ server:
       value: <- connection-port("cache") if-error("2048")
     cache-connection:
       type: string
-      value: <- "redis://" ${cache-host} ":" ${cache-port} concat-all
+      value: <- "redis://" $cache-host ":" $cache-port concat-all
     cache-enabled:
       type: string
-      value: <- ${cache-host} eq?("null") not to-s
+      value: <- $cache-host eq?("null") not to-s
