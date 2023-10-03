@@ -17,7 +17,7 @@ database:
       image: postgres
       image-tag: '12'
       paths:
-        - <- `${monk-volume-path}/directus-database:/var/lib/postgresql/data`
+        - <- `${monk-volume-path}/directus-database:/var/lib/postgresql`
   variables:
     postgres-user:
       env: POSTGRES_USER
