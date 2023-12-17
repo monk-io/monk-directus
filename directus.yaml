@@ -106,9 +106,9 @@ server:
         - <- `DB_DATABASE=${postgres-db}`
         - <- `DB_USER=${postgres-user}`
         - <- `DB_PASSWORD=${postgres-password}`
-        - CACHE_ENABLED=true
+        - <- `CACHE_ENABLED=${cache-enabled}`
         - CACHE_STORE=redis
-        - <- "CACHE_REDIS=redis://" connection-hostname("cache") ":" connection-port("cache") concat-all
+        - <- `CACHE_REDIS=${cache-connection}`
         - <- `ADMIN_EMAIL=${admin-email}`
         - <- `ADMIN_PASSWORD=${admin-password}`
         - CONFIG_PATH=/directus/monk-config.json
@@ -146,3 +146,15 @@ server:
     config:
       type: string
       value: '{}'
+    cache-host:
+      type: string
+      value: <- connection-hostname("cache") if-error("null")
+    cache-port:
+      type: string
+      value: <- connection-port("cache") if-error("2048")
+    cache-connection:
+      type: string
+      value: <- "redis://" $cache-host ":" $cache-port concat-all
+    cache-enabled:
+      type: string
+      value: <- $cache-host eq?("null") not to-s
