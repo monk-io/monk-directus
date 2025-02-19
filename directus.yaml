@@ -6,18 +6,17 @@ database:
   metadata:
     private: true
     name: PostgreSQL
-    description: PostgreSQL is a powerful, open source object-relational database system with over 30 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance.
+    description: PostGIS is a spatial database extender for PostgreSQL object-relational database. It adds support for geographic objects allowing location queries to be run in SQL.
     tags: database, dataops
     website: https://www.postgresql.org/
     source: https://github.com/postgres/postgres
     publisher: monk.io
-    icon: https://assets.monk.io/icons/postgresql_logo.png
+    icon: https://avatars.githubusercontent.com/u/1759716?s=200&v=4
   containers:
     postgres:
-      image: postgres
-      image-tag: '12'
+      image: postgis/postgis:13-master
       paths:
-        - <- `${monk-volume-path}/directus-database:/var/lib/postgresql`
+        - <- `${monk-volume-path}/directus-database:/var/lib/postgresql/data`
   variables:
     postgres-user:
       env: POSTGRES_USER
@@ -46,11 +45,11 @@ cache:
     website: https://redis.io
     source: https://github.com/redis/redis
     publisher: monk.io
-    icon: https://assets.monk.io/icons/png-transparent-redis-in-memory-database-key-value-database-cache-speech-miscellaneous-logo-data.png
+    icon: https://avatars.githubusercontent.com/u/1529926?s=200&v=4
     email: maciej@monk.io
   containers:
     redis:
-      image: docker.io/redis:alpine
+      image: redis:6.2.17
       paths:
         - <- `${monk-volume-path}/directus-redis:/data`
   services:
@@ -64,7 +63,7 @@ server:
   metadata:
     name: Directus
     shortname: Directus
-    icon: https://pbs.twimg.com/profile_images/1495544699410653190/Vb675Xa3_400x400.jpg
+    icon: https://avatars.githubusercontent.com/u/15967950?s=200&v=4
     description: |
       Directus is an open-source content management system (CMS) and application programming interface (API) that allows you to create custom databases and user interfaces without writing any code.
       With Directus, you can build custom backends and interfaces for websites, mobile applications, and other digital platforms. It is designed to be flexible, scalable, and easy to use, with a modular architecture that allows you to customize and extend its functionality to meet your specific needs.
@@ -93,27 +92,23 @@ server:
       port: 8055
       protocol: tcp
       host-port: 8055
+      publish: true
   containers:
     directus:
-      image: directus/directus
-      image-tag: '9'
+      image: directus/directus:11.3.5
       environment:
-        - <- `KEY=${key}`
-        - <- `SECRET=${secret}`
-        - <- `DB_CLIENT=pg`
         - <- "DB_HOST=" connection-hostname("database") concat-all
         - <- "DB_PORT=" connection-port("database") concat-all
-        - <- `DB_DATABASE=${postgres-db}`
-        - <- `DB_USER=${postgres-user}`
-        - <- `DB_PASSWORD=${postgres-password}`
+        - DB_CLIENT=pg
         - CACHE_ENABLED=true
         - CACHE_STORE=redis
-        - <- "CACHE_REDIS=redis://" connection-hostname("cache") ":" connection-port("cache") concat-all
-        - <- `ADMIN_EMAIL=${admin-email}`
-        - <- `ADMIN_PASSWORD=${admin-password}`
+        - CACHE_AUTO_PURGE=true
+        - <- "REDIS=redis://" connection-hostname("cache") ":" connection-port("cache") concat-all
         - CONFIG_PATH=/directus/monk-config.json
       paths:
         - <- `${monk-volume-path}/directus-uploads:/directus/uploads`
+        - <- `${monk-volume-path}/directus-templates:/directus/templates`
+        - <- `${monk-volume-path}/directus-extensions:/directus/extensions`
   files:
     config:
       container: directus
@@ -125,24 +120,36 @@ server:
     postgres-user:
       type: string
       value: directus
+      env: DB_USER
     postgres-password:
       type: string
       value: directus
+      env: DB_PASSWORD
     postgres-db:
       type: string
       value: directus
+      env: DB_DATABASE
     admin-email:
       type: string
       value: admin@directus.io
+      env: ADMIN_EMAIL
     admin-password:
       type: string
       value: directus
+      env: ADMIN_PASSWORD
     key:
       type: string
       value: <- random-uuid
+      env: KEY
     secret:
       type: string
       value: <- random-uuid
+      env: SECRET
     config:
       type: string
       value: '{}'
+    public-url:
+      type: string
+      description: The public URL of the Directus instance. Make sure to set this in production.
+      env: PUBLIC_URL
+      value: "/"
