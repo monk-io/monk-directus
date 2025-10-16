@@ -1,0 +1,210 @@
+---
+title: Directus
+description: Ready-to-run Directus container template for open-source data platform and headless CMS.
+primary_category: cms
+tags: [directus, cms, headless-cms, api, template, runnable, database, content-management]
+integration_type: template
+hosting_models: [self-hosted]
+website_url: https://directus.io/
+docs_url: https://docs.directus.io/
+publisher: monk.io
+---
+
+## Overview
+
+This template provides a production‑ready Directus instance as a Monk runnable. You can:
+
+- Run it directly to get a managed headless CMS and data platform
+- Inherit it in your own applications to add a powerful API-first content management system
+
+Directus is an open-source data platform that wraps any SQL database with a real-time GraphQL+REST API and an intuitive no-code app for non-technical users. It's perfect for headless CMS, data management, and building backends for apps.
+
+## What this template manages
+
+- Directus server with admin UI
+- PostgreSQL or MySQL database
+- Redis for caching (optional)
+- REST and GraphQL APIs
+- File storage and asset management
+- Web UI on port 8055
+
+## Quick start (run directly)
+
+1) Load templates
+
+```bash
+monk load MANIFEST
+```
+
+2) Run Directus stack
+
+```bash
+monk run directus/stack
+```
+
+3) Customize credentials (recommended via inheritance)
+
+Running directly uses the defaults defined in this template's `variables`. Secrets added with `monk secrets add` will not affect this runnable unless you inherit it and reference those secrets.
+
+- Preferred: inherit and replace variables with `secret("...")` as shown below.
+- Alternative: fork/clone and edit the `variables` in `directus.yaml`, then `monk load MANIFEST` and run.
+
+Once started, access Directus at `http://localhost:8055` and create your admin user on first login.
+
+## Configuration
+
+Key variables you can customize in this template:
+
+```yaml
+variables:
+  # Directus
+  directus-image-tag: "latest"        # Directus image tag
+  directus-port: "8055"               # web UI and API port
+  directus-key: "..."                 # encryption key (env: KEY)
+  directus-secret: "..."              # auth secret (env: SECRET)
+  admin-email: "admin@example.com"    # admin email (env: ADMIN_EMAIL)
+  admin-password: "..."               # admin password (env: ADMIN_PASSWORD)
+  
+  # Database
+  db-type: "postgres"                 # postgres or mysql (env: DB_CLIENT)
+  postgres-password: "..."            # database password (env: DB_PASSWORD)
+  postgres-user: "directus"           # database user (env: DB_USER)
+  postgres-db: "directus"             # database name (env: DB_DATABASE)
+```
+Data is persisted under `${monk-volume-path}/directus` and `${monk-volume-path}/postgres` on the host.
+
+## Use by inheritance (recommended for apps)
+
+Inherit the Directus stack in your application and declare a connection. Example:
+
+```yaml
+namespace: myapp
+cms:
+  defines: runnable
+  inherits: directus/stack
+  variables:
+    directus-key:
+      value: <- secret("directus-key")
+    directus-secret:
+      value: <- secret("directus-secret")
+    admin-password:
+      value: <- secret("directus-admin-password")
+frontend:
+  defines: runnable
+  containers:
+    app:
+      image: myorg/webapp
+      environment:
+        - DIRECTUS_URL=<- connection-hostname("content") port-concat 8055
+        - DIRECTUS_TOKEN=<- secret("directus-api-token")
+  connections:
+    content:
+      runnable: cms
+      service: directus
+```
+
+Then set the secrets once and run your app:
+
+```bash
+monk secrets add -g directus-key="<random-key>"
+monk secrets add -g directus-secret="<random-secret>"
+monk secrets add -g directus-admin-password="STRONG_PASSWORD"
+monk secrets add -g directus-api-token="<api-token>"
+monk run myapp/frontend
+```
+
+## Ports and connectivity
+
+- Service: `directus` on TCP port `8055`
+- From other runnables in the same process group, use `connection-hostname("<connection-name>")` to resolve the Directus host.
+- REST API: `http://<host>:8055/items/<collection>`
+- GraphQL API: `http://<host>:8055/graphql`
+
+## Persistence and configuration
+
+- Data path: `${monk-volume-path}/directus/uploads:/directus/uploads`
+- Extensions path: `${monk-volume-path}/directus/extensions:/directus/extensions`
+- Database path: `${monk-volume-path}/postgres:/var/lib/postgresql/data`
+- You can add custom Directus extensions by placing them in the extensions path.
+
+## Features
+
+- **Headless CMS**: API-first content management
+- **Database Wrapper**: Works with any SQL database
+- **Auto-Generated APIs**: REST and GraphQL from database schema
+- **No-Code App**: Intuitive UI for non-technical users
+- **File Management**: Upload, transform, and serve assets
+- **User & Role Management**: Granular permissions
+- **Webhooks & Automation**: Trigger actions on data changes
+- **Translations**: Multi-language content support
+- **Custom Extensions**: Extend with modules, interfaces, and hooks
+
+## API Access
+
+REST API example:
+
+```bash
+# Get items from a collection
+curl http://localhost:8055/items/articles \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Create item
+curl -X POST http://localhost:8055/items/articles \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Hello World",
+    "content": "This is my first article"
+  }'
+```
+
+GraphQL example:
+
+```graphql
+query {
+  articles {
+    id
+    title
+    content
+    author {
+      name
+    }
+  }
+}
+```
+
+## Use cases
+
+Directus excels at:
+- Headless CMS for websites and apps
+- Backend-as-a-Service (BaaS)
+- Admin panels and dashboards
+- Data management platforms
+- API layer for legacy databases
+- Multi-channel content delivery
+- Internal tools and workflows
+
+
+## Related templates
+
+- Combine with databases (PostgreSQL, MySQL) for content storage
+- Use with CDN for static asset delivery
+- Integrate with object storage (S3, Minio) for media files
+
+## Troubleshooting
+
+- Access Directus UI at `http://localhost:8055`
+- Generate random keys: `openssl rand -hex 32`
+- Create API token in Settings → Access Tokens
+- If you changed `admin-password` but the instance has existing data, authentication may fail. Either reset the data volume or update the password in Directus settings.
+- Ensure the host volumes are writable by the container user.
+- Check logs:
+
+```bash
+monk logs -l 500 -f local/directus/stack
+```
+
+- For database connection issues, verify PostgreSQL is running
+- For file upload issues, check volume permissions
+- For API errors, verify authentication token is valid
+- Monitor PostgreSQL performance for large datasets
